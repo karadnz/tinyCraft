@@ -162,7 +162,7 @@ public class Player extends Entity{
 		
 	}
 	
-	public void update()
+	public void update() //collisonla beraber calismiyor
 	{
 		//System.out.println("HIT");
 		if (keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed)

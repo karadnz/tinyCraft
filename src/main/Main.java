@@ -22,5 +22,8 @@ public class Main {
 		
 		window.requestFocusInWindow(); // request focus on JFrame
 		gamePanel.requestFocusInWindow(); // request focus on GamePanel
+		
+		gamePanel.setupGame();
+		gamePanel.startGameThread();
 	}
 }

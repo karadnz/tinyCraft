@@ -14,8 +14,9 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import entity.Player;
-
 import tile.TileManager;
+import object.SuperObject;
+
 import java.util.Random;
 
 public class GamePanel extends JPanel implements Runnable{
@@ -40,6 +41,10 @@ public class GamePanel extends JPanel implements Runnable{
 	TileManager tileM;
 	
 	public CollisionChecker cChecker = new CollisionChecker(this);
+	
+	public AssetSetter aSetter= new AssetSetter(this);
+	
+	public SuperObject obj[]= new SuperObject[10]; //newlwei tasi
 	
 	public int[][] map;
 	private OpenSimplexNoise noise;
@@ -78,12 +83,17 @@ public class GamePanel extends JPanel implements Runnable{
 		 generateMap();
 		 //loadMap();
 		
-		this.startGameThread();
+		
 		//javax.swing.SwingUtilities.invokeLater(gameThread);
 		
 		this.requestFocusInWindow();
 		this.requestFocus();
 		//player.getPlayerImage();
+	}
+	
+	public void setupGame()
+	{
+		aSetter.setObject();
 	}
 	
 	public void loadMap()//ya burda ya da tilemanagaer.draw da sikinit var
@@ -216,7 +226,16 @@ public class GamePanel extends JPanel implements Runnable{
 		Graphics2D g2 = (Graphics2D)g; //g2 class extend g class to provide more control over geometry, coordinate transforms. color management and tex layout...
 		
 		tileM.draw(g2);
+		
+		for (int i = 0; i < obj.length; i++)
+		{
+			if (obj[i] != null)
+			{
+				obj[i].draw(g2, this);
+			}
+		}
 		player.draw(g2);
+		
 		g2.dispose(); //dispose of this graphics context and release any system resources that it is using // to save memory
 	}
 	
