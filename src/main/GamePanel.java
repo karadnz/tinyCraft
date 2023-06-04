@@ -39,14 +39,16 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	TileManager tileM;
 	
+	public CollisionChecker cChecker = new CollisionChecker(this);
+	
 	public int[][] map;
 	private OpenSimplexNoise noise;
 	
 	
 	//WORLD SETTINGS
 	
-	public final int maxWorldCol = 50;
-	public final int maxWorldRow = 50;
+	public final int maxWorldCol = 160;
+	public final int maxWorldRow = 120;
 	
 	public final int maxWorldWidth = tileSize * maxWorldCol;
 	public final int maxWorldHeight = tileSize * maxWorldRow;
@@ -200,7 +202,8 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	public void update()
 	{
-		player.update();
+		player.updateCameraOff();
+		//player.update(); //collison problem
 		
 		//player.y += player.speed;
 		

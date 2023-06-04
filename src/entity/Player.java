@@ -3,6 +3,7 @@ package entity;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -21,6 +22,9 @@ public class Player extends Entity{
 	public final int screenX;
 	public final int screenY;
 	
+	public int boxscreenX;
+	public int boxscreenY;
+	
 	public Player(GamePanel gp, KeyHandler keyH)
 	{
 		
@@ -29,6 +33,17 @@ public class Player extends Entity{
 		
 		screenX = (gp.screenWidth / 2)  - (gp.tileSize / 2); //we subctract half of a tile because these coordinates are indicates the top left corner of the image
 		screenY = (gp.screenHeight / 2) - (gp.tileSize / 2);
+		
+		boxscreenX = screenX;
+		boxscreenY = screenY;
+		
+		solidArea = new Rectangle(); //change from fixed to dynamic
+		solidArea.x = 8;
+		solidArea.y = 16;
+		solidArea.width = 32;
+		solidArea.height = 32;
+		
+		
 		setDefValues();
 		getPlayerImage();
 		
@@ -71,7 +86,202 @@ public class Player extends Entity{
 		
 	}
 	
+	public void updateCameraOff()
+	{
+		//System.out.println("HIT");
+		if (keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed)
+		{
+			spriteCounter++;
+			if (spriteCounter > 10)
+			{
+				if (spriteNum == 1)
+					spriteNum = 2;
+				else
+					spriteNum =1;
+				spriteCounter = 0;
+			}
+			
+			int threshold = gp.tileSize * 3; // define a boundary threshold
+			
+			if(keyH.upPressed == true)
+			{
+				direction = "up";
+			}
+			
+			else if(keyH.downPressed == true)
+			{
+				direction = "down";
+			}
+			
+			else if(keyH.leftPressed == true)
+			{
+				direction = "left";
+			}
+			
+			else if(keyH.rightPressed == true)
+			{
+				direction = "right";
+			}
+			
+			//check tile colliuson
+			collisionOn = false;
+			gp.cChecker.checkTile(this);
+			
+			if (collisionOn == false)
+			{
+				switch (direction)
+				{
+				case "up":
+					
+						worldY -= speed;
+					
+					break;
+				case "down":
+					
+						worldY += speed;
+				
+					break;
+				case "left":
+					
+						worldX -= speed;
+					
+					break;
+				case "right":
+					
+						worldX += speed;
+					
+					break;
+				
+				}
+				
+			}
+		}
+		
+		
+		
+		
+	}
+	
 	public void update()
+	{
+		//System.out.println("HIT");
+		if (keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed)
+		{
+			spriteCounter++;
+			if (spriteCounter > 10)
+			{
+				if (spriteNum == 1)
+					spriteNum = 2;
+				else
+					spriteNum =1;
+				spriteCounter = 0;
+			}
+			
+			int threshold = gp.tileSize * 3; // define a boundary threshold
+			
+			if(keyH.upPressed == true)
+			{
+				direction = "up";
+			}
+			
+			else if(keyH.downPressed == true)
+			{
+				direction = "down";
+			}
+			
+			else if(keyH.leftPressed == true)
+			{
+				direction = "left";
+			}
+			
+			else if(keyH.rightPressed == true)
+			{
+				direction = "right";
+			}
+			
+			//check tile colliuson
+			collisionOn = false;
+			gp.cChecker.checkTile(this);
+			
+			if (collisionOn == false)
+			{
+				if (collisionOn == false)
+				{
+					switch (direction)
+					{
+					case "up":
+						worldY -= speed;
+						if(boxscreenY > threshold) {
+							boxscreenY -= speed;
+						}
+						break;
+					case "down":
+						worldY += speed;
+						if(boxscreenY < gp.screenHeight - threshold) {
+							boxscreenY += speed;
+						}
+						break;
+					case "left":
+						worldX -= speed;
+						if(boxscreenX > threshold) {
+							boxscreenX -= speed;
+						}
+						break;
+					case "right":
+						worldX += speed;
+						if(boxscreenX < gp.screenWidth - threshold) {
+							boxscreenX += speed;
+						}
+						break;
+					
+					}
+					
+				}
+				
+			}
+				
+			}
+		/*switch (direction)
+		{
+		case "up":
+			if(boxscreenY > threshold) {
+				boxscreenY -= speed;
+			} else {
+				worldY -= speed;
+			}
+			break;
+		case "down":
+			if(boxscreenY < gp.screenHeight - threshold) {
+				boxscreenY += speed;
+			} else {
+				worldY += speed;
+			}
+			break;
+		case "left":
+			if(boxscreenX > threshold) {
+				boxscreenX -= speed;
+			} else {
+				worldX -= speed;
+			}
+			break;
+		case "right":
+			if(boxscreenX < gp.screenWidth - threshold) {
+				boxscreenX += speed;
+			} else {
+				worldX += speed;
+			}
+			break;*/
+	}
+		
+		
+
+		
+		
+		
+		
+
+
+	public void updateOld()
 	{
 		//System.out.println("HIT");
 		if (keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed)
@@ -92,6 +302,8 @@ public class Player extends Entity{
 			direction = "up";
 			//System.out.println(direction);
 			worldY -= speed; //upper left is 0 0
+			
+			boxscreenY -= speed;
 		}
 		
 		else if(keyH.downPressed == true)
@@ -99,6 +311,8 @@ public class Player extends Entity{
 			direction = "down";
 			//System.out.println(direction);
 			worldY += speed; 
+			
+			boxscreenY += speed;
 		}
 		
 		else if(keyH.leftPressed == true)
@@ -106,6 +320,8 @@ public class Player extends Entity{
 			direction = "left";
 			//System.out.println(direction);
 			worldX -= speed; 
+			
+			boxscreenX -= speed;
 		}
 		
 		else if(keyH.rightPressed == true)
@@ -113,7 +329,19 @@ public class Player extends Entity{
 			direction = "right";
 			//System.out.println(direction);
 			worldX += speed; 
+			
+			boxscreenX += speed;
 		}
+		
+		if (boxscreenX - screenX > gp.tileSize * 2)
+		    boxscreenX -= speed;       
+		else if(boxscreenX - screenX < -gp.tileSize * 2)
+		    boxscreenX += speed;
+
+		if (boxscreenY - screenY > gp.tileSize * 2)
+		    boxscreenY -= speed;       
+		else if(boxscreenY - screenY < -gp.tileSize * 2)
+		    boxscreenY += speed;
 		
 		/*if (worldX > gp.screenWidth)
 			worldX = 0;		
@@ -160,7 +388,7 @@ public class Player extends Entity{
 		
 		}
 		//System.out.println(direction);
-		g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+		g2.drawImage(image, boxscreenX, boxscreenY, gp.tileSize, gp.tileSize, null);
 		
 
 		
