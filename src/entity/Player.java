@@ -25,6 +25,8 @@ public class Player extends Entity{
 	public int boxscreenX;
 	public int boxscreenY;
 	
+	int keyCount = 0;
+	
 	public Player(GamePanel gp, KeyHandler keyH)
 	{
 		
@@ -40,8 +42,11 @@ public class Player extends Entity{
 		solidArea = new Rectangle(); //change from fixed to dynamic
 		solidArea.x = 8;
 		solidArea.y = 16;
-		solidArea.width = 32;
-		solidArea.height = 32;
+		solidArea.width = 18; //32
+		solidArea.height = 18;
+		
+		solidAreaDefaultX = solidArea.x;
+		solidAreaDefaultY = solidArea.y;
 		
 		
 		setDefValues();
@@ -53,7 +58,7 @@ public class Player extends Entity{
 	public void setDefValues()
 	{
 		worldX = gp.tileSize * 23;
-		worldY = gp.tileSize  * 21;
+		worldY = gp.tileSize  * 22;
 		speed = 4;
 		direction = "down";
 	}
@@ -126,6 +131,10 @@ public class Player extends Entity{
 			//check tile colliuson
 			collisionOn = false;
 			gp.cChecker.checkTile(this);
+			
+			//object coll
+			int objIndex = gp.cChecker.checkObject(this, true);
+			pickUpObject(objIndex);
 			
 			if (collisionOn == false)
 			{
@@ -273,13 +282,6 @@ public class Player extends Entity{
 			break;*/
 	}
 		
-		
-
-		
-		
-		
-		
-
 
 	public void updateOld()
 	{
@@ -353,6 +355,55 @@ public class Player extends Entity{
 		else if (worldY < 0)
 			worldY = gp.screenHeight;*/
 		
+		
+		
+	}
+	
+	public void pickUpObject(int i)
+	{
+		if (i == -1)
+			return;
+		//gp.obj[i] = null;
+		
+		switch(gp.obj[i].name)
+		{
+		case "Key":
+			gp.playSE(1);
+			
+			gp.obj[i] = null;
+			keyCount++;
+			
+			break;
+		case "Door":
+			if(keyCount > 0)
+			{
+				gp.playSE(3);
+				keyCount--;
+				gp.obj[i] = null;
+			}
+			
+			break;
+		case "Chest":
+			if(keyCount > 0)
+			{
+				gp.playSE(4);
+				keyCount--;
+				gp.obj[i] = null;
+			}
+	
+			break;
+		case "Boots":
+			if(speed == 4)
+			{
+				gp.playSE(2);
+				speed *= 2;
+				gp.obj[i] = null;
+			}
+	
+			break;
+
+		
+		}
 		
 		
 	}

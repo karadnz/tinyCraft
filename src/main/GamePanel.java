@@ -40,6 +40,9 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	TileManager tileM;
 	
+	Sound music = new Sound();
+	Sound se = new Sound();
+	
 	public CollisionChecker cChecker = new CollisionChecker(this);
 	
 	public AssetSetter aSetter= new AssetSetter(this);
@@ -52,7 +55,7 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	//WORLD SETTINGS
 	
-	public final int maxWorldCol = 160;
+	public final int maxWorldCol = 160; //50 50
 	public final int maxWorldRow = 120;
 	
 	public final int maxWorldWidth = tileSize * maxWorldCol;
@@ -94,6 +97,8 @@ public class GamePanel extends JPanel implements Runnable{
 	public void setupGame()
 	{
 		aSetter.setObject();
+		
+		playMusic(0);
 	}
 	
 	public void loadMap()//ya burda ya da tilemanagaer.draw da sikinit var
@@ -112,11 +117,16 @@ public class GamePanel extends JPanel implements Runnable{
 	        {
 	        	String line = br.readLine();
 	        	
+	        	//System.out.println(line);
+	        	
 	        	while (col < maxWorldCol)
 	        	{
+	        		
 	        		String nums[] = line.split(" ");
 	        		
 	        		int num = Integer.parseInt(nums[col]);
+	        		//System.out.print(num + " ");
+	        		
 	        		
 	        		map[col][row] = num;
 	        		col++;
@@ -237,6 +247,24 @@ public class GamePanel extends JPanel implements Runnable{
 		player.draw(g2);
 		
 		g2.dispose(); //dispose of this graphics context and release any system resources that it is using // to save memory
+	}
+	
+	public void playMusic(int i)
+	{
+		music.setFile(i);
+		music.play();
+		music.loop();
+	}
+	
+	public void stopMusic()
+	{
+		music.stop();
+	}
+	
+	public void playSE(int i) //sound effect
+	{
+		se.setFile(i);
+		se.play();
 	}
 	
 }
