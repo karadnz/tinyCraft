@@ -47,6 +47,8 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	public AssetSetter aSetter= new AssetSetter(this);
 	
+	public UI ui = new UI(this);
+	
 	public SuperObject obj[]= new SuperObject[10]; //newlwei tasi
 	
 	public int[][] map;
@@ -60,6 +62,8 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	public final int maxWorldWidth = tileSize * maxWorldCol;
 	public final int maxWorldHeight = tileSize * maxWorldRow;
+	
+	public long startTime;
 	
 	
 	
@@ -85,6 +89,8 @@ public class GamePanel extends JPanel implements Runnable{
 		 this.noise = new OpenSimplexNoise(rand.nextLong());
 		 generateMap();
 		 //loadMap();
+		 
+		 startTime = System.nanoTime();
 		
 		
 		//javax.swing.SwingUtilities.invokeLater(gameThread);
@@ -245,6 +251,7 @@ public class GamePanel extends JPanel implements Runnable{
 			}
 		}
 		player.draw(g2);
+		ui.draw(g2);
 		
 		g2.dispose(); //dispose of this graphics context and release any system resources that it is using // to save memory
 	}

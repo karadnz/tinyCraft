@@ -25,7 +25,7 @@ public class Player extends Entity{
 	public int boxscreenX;
 	public int boxscreenY;
 	
-	int keyCount = 0;
+	public int keyCount = 0;
 	
 	public Player(GamePanel gp, KeyHandler keyH)
 	{
@@ -369,6 +369,8 @@ public class Player extends Entity{
 		{
 		case "Key":
 			gp.playSE(1);
+			gp.ui.showMessage("You got a key!");
+			//System.out.println("hit");
 			
 			gp.obj[i] = null;
 			keyCount++;
@@ -381,6 +383,10 @@ public class Player extends Entity{
 				keyCount--;
 				gp.obj[i] = null;
 			}
+			else
+			{
+				gp.ui.showMessage("You need a key to open it!");
+			}
 			
 			break;
 		case "Chest":
@@ -389,6 +395,13 @@ public class Player extends Entity{
 				gp.playSE(4);
 				keyCount--;
 				gp.obj[i] = null;
+				gp.ui.gameFinished = true;
+				gp.stopMusic();
+				
+			}
+			else
+			{
+				gp.ui.showMessage("You need a key to open it!");
 			}
 	
 			break;
@@ -399,6 +412,7 @@ public class Player extends Entity{
 				speed *= 2;
 				gp.obj[i] = null;
 			}
+			gp.ui.showMessage("Just the boost you need!");
 	
 			break;
 
