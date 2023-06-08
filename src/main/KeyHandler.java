@@ -6,6 +6,9 @@ import java.awt.event.KeyEvent;
 public class KeyHandler extends KeyAdapter {
 
     public boolean upPressed, downPressed, leftPressed, rightPressed;
+    
+    //DEBUG
+    boolean isDebug = false;
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -32,6 +35,11 @@ public class KeyHandler extends KeyAdapter {
         if (code == KeyEvent.VK_D) {
             //System.out.println("HIT");
             rightPressed = true;
+        }
+        
+        if (code == KeyEvent.VK_T) {
+            //System.out.println("HIT");
+            isDebug = !isDebug;
         }
     }
 

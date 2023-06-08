@@ -27,7 +27,7 @@ public class UI {
 		this.gp = gp;
 		arial_20B = new Font("Ariel", Font.BOLD, 20);
 		arial_40B = new Font("Ariel", Font.BOLD, 40);//to avoid creating an instance each time draw called
-		OBJ_Key key = new OBJ_Key();
+		OBJ_Key key = new OBJ_Key(gp);
 		keyImage = key.image;
 	}
 	

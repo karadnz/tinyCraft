@@ -18,6 +18,8 @@ public class SuperObject {
 	public int solidAreaDefaultX =0;
 	public int solidAreaDefaultY = 0;
 	
+	GamePanel gp;
+	
 	public void draw(Graphics2D g2, GamePanel gp)
 	{
 		
@@ -29,7 +31,7 @@ public class SuperObject {
 			worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
 			worldY - gp.tileSize < gp.player.worldY + gp.player.screenY) //adding a tile size to draw a bit more than screen
 		{
-			g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+			g2.drawImage(image, screenX, screenY, null);
 		}
 		
 	}

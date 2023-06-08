@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.Color;
+
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -15,9 +16,11 @@ import javax.swing.JPanel;
 
 import entity.Player;
 import tile.TileManager;
-import object.SuperObject;
+import object.*;
 
 import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GamePanel extends JPanel implements Runnable{
 	
@@ -50,6 +53,7 @@ public class GamePanel extends JPanel implements Runnable{
 	public UI ui = new UI(this);
 	
 	public SuperObject obj[]= new SuperObject[10]; //newlwei tasi
+	public List<SuperObject> objects = new ArrayList<>();
 	
 	public int[][] map;
 	private OpenSimplexNoise noise;
@@ -64,6 +68,9 @@ public class GamePanel extends JPanel implements Runnable{
 	public final int maxWorldHeight = tileSize * maxWorldRow;
 	
 	public long startTime;
+	
+	
+	Random rand = new Random();
 	
 	
 	
@@ -159,7 +166,89 @@ public class GamePanel extends JPanel implements Runnable{
 	    
 	}
 	
+	public void tryGenerateObject(String obj, int num, int x, int y)
+	{
+		if (rand.nextInt(num) != 0)
+			return ;
+		switch(obj)
+		{
+			case "Chest":
+				OBJ_Chest chest = new OBJ_Chest(this); 
+				chest.worldX = x * tileSize;
+				chest.worldY = y * tileSize;
+                objects.add(chest);
+				break;
+				
+			case "Key":
+				OBJ_Key key = new OBJ_Key(this); 
+                key.worldX = x * tileSize;
+                key.worldY = y * tileSize;
+                objects.add(key);
+				break;
+			
+			case "Door":
+				OBJ_Door door = new OBJ_Door(this); 
+				door.worldX = x * tileSize;
+				door.worldY = y * tileSize;
+                objects.add(door);
+				break;
+				
+			case "Boots":
+				OBJ_Boots boots = new OBJ_Boots(this); 
+				boots.worldX = x * tileSize;
+				boots.worldY = y * tileSize;
+                objects.add(boots);
+				break;
+		}
+		
+	}
+	
 	public void generateMap() {
+	    double scale = 0.1; // smaller values create smoother transitions
+	    for(int x = 0; x < map.length; x++)
+	    {
+	        for(int y = 0; y < map[0].length; y++)
+	        {
+	            double value = noise.eval(x * scale, y * scale, 0);
+	            if (value < -0.4)
+	            {
+	                map[x][y] = 2;  // water
+	            }
+	            else if (value < 0)
+	            {
+	                map[x][y] = 5;  // sand
+	                
+	                tryGenerateObject("Chest", 300, x, y);
+	            
+	            }
+	            else if (value < 0.3)
+	            {
+	                map[x][y] = 0;  // grass
+	                
+	                tryGenerateObject("Key", 100, x, y);
+	                tryGenerateObject("Door", 300, x, y);
+
+	            }
+	            else if (value < 0.5)
+	            {
+	                map[x][y] = 3;  // earth
+	                
+	                tryGenerateObject("Boots", 150, x, y);
+	            }
+	            else if (value < 0.7)
+	            {
+	                map[x][y] = 4;  // trees
+	         
+	            } else
+	            {
+	                map[x][y] = 1;  // wall
+	    
+	            }
+	        }
+	    }
+	}
+	
+	public void generateMapOG() {
 	    double scale = 0.1; // smaller values create smoother transitions
 	    for(int x = 0; x < map.length; x++) {
 	        for(int y = 0; y < map[0].length; y++) {
@@ -218,8 +307,7 @@ public class GamePanel extends JPanel implements Runnable{
 				
 				
 			}
-			
-			
+				
 			}
 		}
 		
@@ -231,7 +319,6 @@ public class GamePanel extends JPanel implements Runnable{
 		player.updateCameraOff();
 		//player.update(); //collison problem
 		
-		//player.y += player.speed;
 		
 	}
 	
@@ -241,17 +328,40 @@ public class GamePanel extends JPanel implements Runnable{
 		
 		Graphics2D g2 = (Graphics2D)g; //g2 class extend g class to provide more control over geometry, coordinate transforms. color management and tex layout...
 		
+		//DEBUG
+		long drawStart = 0;
+		if (keyH.isDebug)
+		{
+			drawStart = System.nanoTime();
+		}
+		
+		
+		
+		//TILE
 		tileM.draw(g2);
 		
-		for (int i = 0; i < obj.length; i++)
-		{
-			if (obj[i] != null)
-			{
-				obj[i].draw(g2, this);
-			}
-		}
+		//OBJ
+		for (SuperObject object : objects)
+	    {
+	        object.draw(g2, this);
+	    }
+		
+		//PLAYER
 		player.draw(g2);
+		
+		//UI
 		ui.draw(g2);
+		
+		
+		
+		long passed =  0 ;
+		if (keyH.isDebug)
+		{
+			passed = System.nanoTime() - drawStart;
+			g2.setColor(Color.white);
+			g2.drawString("Draw Time: " + passed, 10, 400);
+			System.out.println("Draw Time: " + passed); //my average is 16,982,583 in vid 600,000 - 900,000 it depends computer to computer
+		}
 		
 		g2.dispose(); //dispose of this graphics context and release any system resources that it is using // to save memory
 	}

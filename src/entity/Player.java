@@ -11,6 +11,8 @@ import javax.imageio.ImageIO;
 
 import main.GamePanel;
 import main.KeyHandler;
+import main.UtilityTool;
+import object.SuperObject;
 
 
 
@@ -63,32 +65,33 @@ public class Player extends Entity{
 		direction = "down";
 	}
 	
-	public void getPlayerImage()
+	public void getPlayerImage() //hit as low as 500k at draw() after pre scaling player
 	{
-		System.out.println("HIT GETPLAYERIMAGE");
-		try {
-			up1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_1.png"));
-			up2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_2.png"));
-			down1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_down_1.png"));
-			down2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_down_2.png"));
-			right1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_right_1.png"));
-			right2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_right_2.png"));
-			left1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_left_1.png"));
-			left2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_left_2.png"));
+		up1 = setup("boy_up_1");
+		up2 = setup("boy_up_2");
+		down1 = setup("boy_down_1");
+		down2 = setup("boy_down_2");
+		right1 = setup("boy_right_1");
+		right2 = setup("boy_right_2");
+		left1 = setup("boy_left_1");
+		left2 = setup("boy_left_2");
 			
+	}
+	
+	public BufferedImage setup(String imageName)
+	{
+		BufferedImage scaledImage = null;
+		try
+		{
+			scaledImage = ImageIO.read(getClass().getResourceAsStream("/player/" + imageName + ".png"));
+			scaledImage = UtilityTool.scaleImage(scaledImage, gp.tileSize, gp.tileSize);
 			
-			
-			
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			System.err.println("Error loading player images.");
+		}catch(IOException e)
+		{
 			e.printStackTrace();
 		}
 		
-		
-	
-		
+		return scaledImage;
 	}
 	
 	public void updateCameraOff()
@@ -167,8 +170,6 @@ public class Player extends Entity{
 		}
 		
 		
-		
-		
 	}
 	
 	public void update() //collisonla beraber calismiyor
@@ -219,27 +220,43 @@ public class Player extends Entity{
 					switch (direction)
 					{
 					case "up":
-						worldY -= speed;
+						
 						if(boxscreenY > threshold) {
 							boxscreenY -= speed;
 						}
+						else
+						{
+							worldY -= speed;
+						}
 						break;
 					case "down":
-						worldY += speed;
+						//worldY += speed;
 						if(boxscreenY < gp.screenHeight - threshold) {
 							boxscreenY += speed;
 						}
+						else
+						{
+							worldY += speed;
+						}
 						break;
 					case "left":
-						worldX -= speed;
+						//worldX -= speed;
 						if(boxscreenX > threshold) {
 							boxscreenX -= speed;
 						}
+						else
+						{
+							worldX -= speed;
+						}
 						break;
 					case "right":
-						worldX += speed;
+						//worldX += speed;
 						if(boxscreenX < gp.screenWidth - threshold) {
 							boxscreenX += speed;
+						}
+						else
+						{
+							worldX += speed;
 						}
 						break;
 					
@@ -250,36 +267,6 @@ public class Player extends Entity{
 			}
 				
 			}
-		/*switch (direction)
-		{
-		case "up":
-			if(boxscreenY > threshold) {
-				boxscreenY -= speed;
-			} else {
-				worldY -= speed;
-			}
-			break;
-		case "down":
-			if(boxscreenY < gp.screenHeight - threshold) {
-				boxscreenY += speed;
-			} else {
-				worldY += speed;
-			}
-			break;
-		case "left":
-			if(boxscreenX > threshold) {
-				boxscreenX -= speed;
-			} else {
-				worldX -= speed;
-			}
-			break;
-		case "right":
-			if(boxscreenX < gp.screenWidth - threshold) {
-				boxscreenX += speed;
-			} else {
-				worldX += speed;
-			}
-			break;*/
 	}
 		
 
@@ -359,7 +346,93 @@ public class Player extends Entity{
 		
 	}
 	
-	public void pickUpObject(int i)
+	public void pickUpObject(int i) {
+	    if (i == -1) {
+	        return;
+	    }
+
+	    SuperObject obj = gp.objects.get(i);
+
+	    switch (obj.name) {
+	        case "Key":
+	            gp.playSE(1);
+	            gp.ui.showMessage("You got a key!");
+	            gp.objects.remove(i);
+	            keyCount++;
+	            break;
+	        case "Door":
+	            if (keyCount > 0) {
+	                gp.playSE(3);
+	                keyCount--;
+	                gp.objects.remove(i);
+	            } else {
+	                gp.ui.showMessage("You need a key to open it!");
+	            }
+	            break;
+	        case "Chest":
+	            if (keyCount > 0) {
+	                gp.playSE(4);
+	                keyCount--;
+	                gp.objects.remove(i);
+	                gp.ui.gameFinished = true;
+	                gp.stopMusic();
+	            } else {
+	                gp.ui.showMessage("You need a key to open it!");
+	            }
+	            break;
+	        case "Boots":
+	            if (speed == 4) {
+	                gp.playSE(2);
+	                speed *= 2;
+	                gp.objects.remove(i);
+	            }
+	            gp.ui.showMessage("Just the boost you need!");
+	            break;
+	    }
+	}
+	
+	
+	
+	public void draw(Graphics2D g2)
+	{
+		
+		
+		BufferedImage image = null;
+		
+		switch (direction)
+		{
+		case "up":
+			image = up1;
+			if (spriteNum == 2)
+				image = up2;
+			break;
+		case "down":
+			image = down1;
+			if (spriteNum == 2)
+				image = down2;
+			break;
+		case "left":
+			image = left1;
+			if (spriteNum == 2)
+				image = left2;
+			break;
+		case "right":
+			image = right1;
+			if (spriteNum == 2)
+				image = right2;
+			break;
+		
+		}
+		//System.out.println(direction);
+		g2.drawImage(image, boxscreenX, boxscreenY, null); //gp.tileSize, gp.tileSize, adding these to the arguments seems to have better draw() 
+		//performance even though we pre scaling the images
+		
+
+		
+	}
+	
+	
+	public void pickUpObjectOG(int i)
 	{
 		if (i == -1)
 			return;
@@ -419,43 +492,6 @@ public class Player extends Entity{
 		
 		}
 		
-		
-	}
-	
-	public void draw(Graphics2D g2)
-	{
-		
-		
-		BufferedImage image = null;
-		
-		switch (direction)
-		{
-		case "up":
-			image = up1;
-			if (spriteNum == 2)
-				image = up2;
-			break;
-		case "down":
-			image = down1;
-			if (spriteNum == 2)
-				image = down2;
-			break;
-		case "left":
-			image = left1;
-			if (spriteNum == 2)
-				image = left2;
-			break;
-		case "right":
-			image = right1;
-			if (spriteNum == 2)
-				image = right2;
-			break;
-		
-		}
-		//System.out.println(direction);
-		g2.drawImage(image, boxscreenX, boxscreenY, gp.tileSize, gp.tileSize, null);
-		
-
 		
 	}
 

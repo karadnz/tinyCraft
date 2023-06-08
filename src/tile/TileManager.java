@@ -1,11 +1,14 @@
 package tile;
 
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
 import main.GamePanel;
+import main.UtilityTool;
 
 public class TileManager {
 	GamePanel gp;
@@ -21,53 +24,34 @@ public class TileManager {
 		
 	}
 	
-	public void getTileImage()
+	public void getTileImage() //
 	{
-		System.out.println("HIT GETTILEIMAGE");
-		try {
-			tile[0] = new Tile();
-			tile[0].image = ImageIO.read(getClass().getResourceAsStream("/tiles/grass.png"));
-			
-			tile[1] = new Tile();
-			tile[1].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wall.png"));
-			tile[1].collision = true;
-			
-			tile[2] = new Tile();
-			tile[2].image = ImageIO.read(getClass().getResourceAsStream("/tiles/water.png"));
-			tile[2].collision = true;
-			
-			tile[3] = new Tile();
-			tile[3].image = ImageIO.read(getClass().getResourceAsStream("/tiles/earth.png"));
-			
-			tile[4] = new Tile();
-			tile[4].image = ImageIO.read(getClass().getResourceAsStream("/tiles/tree.png"));
-			tile[4].collision = true;
-			
-			tile[5] = new Tile();
-			tile[5].image = ImageIO.read(getClass().getResourceAsStream("/tiles/sand.png"));
-			
-			
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			System.err.println("Error loading player images.");
-			e.printStackTrace();
-		}
-		
+		setup(0, "grass", false);
+		setup(1, "wall", false);
+		setup(2, "water", true);
+		setup(3, "earth", false);
+		setup(4, "tree", true);
+		setup(5, "sand", false);
 	}
 	
-	public void draw(Graphics2D g2) //bu videoyu yeniden izle
+	public void setup(int index, String imageName, boolean collision)
 	{
-		/*for(int x = 0; x < gp.screenWidth; x += gp.tileSize)
+		try
 		{
-			for(int y = 0; y < gp.screenHeight; y += gp.tileSize)
-			{
-				//g2.drawImage(tile[0].image, x, y, gp.tileSize, gp.tileSize, null);
-				//g2.drawImage(tile[gp.map[x][y]].image, x , y , gp.tileSize, gp.tileSize, null);
-				System.out.println(gp.map[x][y]);
-			}
-		}*/
-		
+			tile[index] = new Tile();
+			tile[index].image = ImageIO.read(getClass().getResourceAsStream("/tiles/" + imageName + ".png"));
+			tile[index].image = UtilityTool.scaleImage(tile[index].image, gp.tileSize, gp.tileSize);
+			tile[index].collision = collision;
+			
+		}catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public void draw(Graphics2D g2) 
+	{
+
 		
 		int worldCol = 0;
 		int worldRow = 0;
@@ -87,7 +71,7 @@ public class TileManager {
 				worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
 				worldY - gp.tileSize < gp.player.worldY + gp.player.screenY) //adding a tile size to draw a bit more than screen
 			{
-				g2.drawImage(tile[tileNum].image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+				g2.drawImage(tile[tileNum].image, screenX, screenY, null);
 			}
 			
 			
@@ -100,25 +84,7 @@ public class TileManager {
 				worldRow++;
 			}
 		}
-		/*
-		for(int x = 0; x < gp.map.length; x++)
-		{
-            for(int y = 0; y < gp.map[0].length; y++)
-            {
-                g2.drawImage(tile[gp.map[x][y]].image, x * gp.tileSize, y * gp.tileSize, gp.tileSize, gp.tileSize, null);
-            }
-		}
-		
-	
-		
-		for(int x = 0; x < gp.map.length; x++)
-		{
-            for(int y = 0; y < gp.map[0].length; y++)
-            {
-                g2.drawImage(tile[gp.map[x][y]].image, x * gp.tileSize, y * gp.tileSize, gp.tileSize, gp.tileSize, null);
-            }
-		}*/
-		
+
 	}
 	
 	
