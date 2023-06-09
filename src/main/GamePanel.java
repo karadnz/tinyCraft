@@ -35,31 +35,30 @@ public class GamePanel extends JPanel implements Runnable{
 	public final int screenWidth = tileSize * maxScreenCol; //768 pixel
 	public final int screenHeight = tileSize * maxScreenRow; //576 pixel
 	
-	KeyHandler keyH = new KeyHandler();
-	Thread gameThread; //implemets Runnable
 	
-	//set player def positons
-	public Player player;
-	
-	TileManager tileM;
-	
+	//SYSTEM
+	TileManager tileM = new TileManager(this);
+	KeyHandler keyH = new KeyHandler(this);
 	Sound music = new Sound();
 	Sound se = new Sound();
 	
 	public CollisionChecker cChecker = new CollisionChecker(this);
-	
 	public AssetSetter aSetter= new AssetSetter(this);
-	
 	public UI ui = new UI(this);
 	
-	public SuperObject obj[]= new SuperObject[10]; //newlwei tasi
+	Thread gameThread; //implemets Runnable
+	
+	
+	//ENTITY AND OBJECT
+	public Player player = new Player(this, keyH);
 	public List<SuperObject> objects = new ArrayList<>();
 	
+	public SuperObject obj[]= new SuperObject[10]; //REMOVE
+	
+	
+	//MAP (MOVE TO A CLASS)
 	public int[][] map;
 	private OpenSimplexNoise noise;
-	
-	
-	//WORLD SETTINGS
 	
 	public int maxWorldCol = 300; //50 50 //final int
 	public int maxWorldRow = 300;
@@ -67,10 +66,26 @@ public class GamePanel extends JPanel implements Runnable{
 	public final int maxWorldWidth = tileSize * maxWorldCol;
 	public final int maxWorldHeight = tileSize * maxWorldRow;
 	
+	
+	//MISC
+	
 	public long startTime;
-	
-	
 	Random rand = new Random();
+	
+	
+	//GAME STATE
+	//public int gameState;
+	public final int playState = 1;
+	public final int pauseStat = 2;
+	
+	
+	enum GameState {
+		  PLAY,
+		  PAUSE,
+		  UNDEFINED
+		}
+	
+	public GameState gameState;
 	
 	
 	
@@ -92,10 +107,9 @@ public class GamePanel extends JPanel implements Runnable{
 		 //int mapWidth = (screenWidth / tileSize) * 20;
 		 //int mapHeight = (screenHeight / tileSize) * 20;
 		 this.map = new int[maxWorldCol][maxWorldRow];
-		 Random rand = new Random();
 		 this.noise = new OpenSimplexNoise(rand.nextLong());
-		 //generateMap();
-		 loadMap();
+		 generateMap();
+		 //loadMap();
 		 
 		 startTime = System.nanoTime();
 		
@@ -112,6 +126,7 @@ public class GamePanel extends JPanel implements Runnable{
 		aSetter.setObject();
 		
 		//playMusic(0);
+		gameState = GameState.PLAY;
 	}
 	
 	public void loadMap()
@@ -311,9 +326,24 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	public void update()
 	{
-		player.updateCameraOff();
-		//player.update(); //collison problem
 		
+		switch(gameState)
+		{
+		case PLAY:
+			player.updateCameraOff();
+			//player.update(); //collison problem
+			break;
+		case PAUSE:
+			
+			break;
+		case UNDEFINED:
+			
+			break;
+		default:
+			break;
+		
+		}
+	
 		
 	}
 	

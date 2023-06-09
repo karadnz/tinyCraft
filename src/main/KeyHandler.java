@@ -3,12 +3,22 @@ package main;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import main.GamePanel.GameState;
+
 public class KeyHandler extends KeyAdapter {
 
     public boolean upPressed, downPressed, leftPressed, rightPressed;
+    GamePanel gp;
     
     //DEBUG
     boolean isDebug = false;
+    
+    public KeyHandler(GamePanel gp)
+    {
+    	this.gp = gp;
+    }
+    
+    
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -40,6 +50,14 @@ public class KeyHandler extends KeyAdapter {
         if (code == KeyEvent.VK_T) {
             //System.out.println("HIT");
             isDebug = !isDebug;
+        }
+        
+        if (code == KeyEvent.VK_SPACE) {
+            //System.out.println("HIT");
+            if (gp.gameState == GameState.PAUSE)
+            	gp.gameState = GameState.PLAY;
+            else
+            	gp.gameState = GameState.PAUSE;
         }
     }
 

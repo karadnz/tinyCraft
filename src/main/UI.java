@@ -11,6 +11,7 @@ import object.*;
 public class UI {
 	
 	GamePanel gp;
+	Graphics2D g2;
 	Font arial_20B, arial_40B;
 	BufferedImage keyImage;
 	
@@ -37,10 +38,50 @@ public class UI {
 		messageOn = true;
 	}
 	
+	public int getXforCenteredText(String text)
+	{
+		int len = (int)g2.getFontMetrics().getStringBounds(text, g2).getWidth();
+		
+		return (gp.screenWidth / 2 - len / 2);
+		
+	}
+	
+	public void drawPauseScreen()
+	{
+		String text = "PAUSED";
+		
+	
+		
+		final int x = getXforCenteredText(text);
+		int y = gp.screenHeight / 2 - (gp.tileSize * 3);
+		g2.drawString(text , x, y);
+	}
+	
+	
 	
 	public void draw(Graphics2D g2)
 	{
+		this.g2 = g2;
+		setText(g2, arial_40B, Color.white);
 		
+		switch(gp.gameState)
+		{
+		case PLAY:
+			break;
+		case PAUSE:
+			drawPauseScreen();
+			break;
+		case UNDEFINED:
+			break;
+		default:
+			break;
+		
+		}
+	}
+	
+	public void drawOLD(Graphics2D g2)
+	{
+		this.g2 = g2;
 		
 		if (gameFinished == true)
 		{
@@ -108,4 +149,11 @@ public class UI {
 		
 	}
 
+	
+	public static void setText(Graphics2D g2, Font font, Color color)
+	{
+		g2.setFont(font);
+		g2.setColor(color);
+		
+	}
 }
