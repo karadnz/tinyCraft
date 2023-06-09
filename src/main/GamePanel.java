@@ -61,8 +61,8 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	//WORLD SETTINGS
 	
-	public final int maxWorldCol = 160; //50 50
-	public final int maxWorldRow = 120;
+	public int maxWorldCol = 300; //50 50 //final int
+	public int maxWorldRow = 300;
 	
 	public final int maxWorldWidth = tileSize * maxWorldCol;
 	public final int maxWorldHeight = tileSize * maxWorldRow;
@@ -94,8 +94,8 @@ public class GamePanel extends JPanel implements Runnable{
 		 this.map = new int[maxWorldCol][maxWorldRow];
 		 Random rand = new Random();
 		 this.noise = new OpenSimplexNoise(rand.nextLong());
-		 generateMap();
-		 //loadMap();
+		 //generateMap();
+		 loadMap();
 		 
 		 startTime = System.nanoTime();
 		
@@ -111,60 +111,55 @@ public class GamePanel extends JPanel implements Runnable{
 	{
 		aSetter.setObject();
 		
-		playMusic(0);
+		//playMusic(0);
 	}
 	
-	public void loadMap()//ya burda ya da tilemanagaer.draw da sikinit var
-	{
-		
+	public void loadMap()
+	{	
 		try
 		{
-			
-	        InputStream is = getClass().getResourceAsStream("/maps/world01.txt");
+	        InputStream is = getClass().getResourceAsStream("/maps/worldV2.txt");
 	        BufferedReader br = new BufferedReader(new InputStreamReader(is));
 	        
-	        int col = 0;
-	        int row = 0;
+	        List<List<Integer>> mapList = new ArrayList<>();
+	        String line;
 	        
-	        while (col < maxWorldCol && row < maxWorldRow)
+	        while ((line = br.readLine()) != null)
 	        {
-	        	String line = br.readLine();
+	        	String[] nums = line.trim().split(" ");
 	        	
-	        	//System.out.println(line);
-	        	
-	        	while (col < maxWorldCol)
-	        	{
-	        		
-	        		String nums[] = line.split(" ");
-	        		
-	        		int num = Integer.parseInt(nums[col]);
-	        		//System.out.print(num + " ");
-	        		
-	        		
-	        		map[col][row] = num;
-	        		col++;
-	        		
+	        	List<Integer> row = new ArrayList<>();
+	        	for(String numStr : nums){
+	        		int num = Integer.parseInt(numStr);
+	        		row.add(num);
 	        	}
 	        	
-	        	if (col == maxWorldCol)
-	        	{
-	        		col = 0;
-	        		row++;
-	        	}
-	        	
+	        	mapList.add(row);
 	        }
 	        br.close();
+
+	        // Now convert the list of lists to a 2D array
+	        int rows = mapList.size();
+	        int cols = mapList.get(0).size(); // Assuming all rows have the same length
 	        
+	        maxWorldRow = rows;
+	        maxWorldCol = cols;
+
+	        map = new int[rows][cols];
+	        
+	        for(int i = 0; i < rows; i++){
+	        	for(int j = 0; j < cols; j++){
+	        		map[i][j] = mapList.get(i).get(j);
+	        	}
+	        }
 		}
 		catch(Exception e)
 		{
-			
+			// Handle the exception here
+			e.printStackTrace();
 		}
-		
-	        
-	 
-	    
 	}
+	
 	
 	public void tryGenerateObject(String obj, int num, int x, int y)
 	{
@@ -301,7 +296,7 @@ public class GamePanel extends JPanel implements Runnable{
 			
 			if (System.nanoTime() - fpsTimer > 1000000000)
 			{
-				System.out.println("FPS:" + drawCount);
+				//System.out.println("FPS:" + drawCount);
 				drawCount = 0;
 				fpsTimer = System.nanoTime();
 				
