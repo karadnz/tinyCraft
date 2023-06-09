@@ -38,7 +38,7 @@ public class UI {
 		messageOn = true;
 	}
 	
-	public int getXforCenteredText(String text)
+	public int getXforCenteredText(String text) //do we really need it?
 	{
 		int len = (int)g2.getFontMetrics().getStringBounds(text, g2).getWidth();
 		
@@ -50,9 +50,8 @@ public class UI {
 	{
 		String text = "PAUSED";
 		
-	
 		
-		final int x = getXforCenteredText(text);
+		int x = getXforCenteredText(text); 
 		int y = gp.screenHeight / 2 - (gp.tileSize * 3);
 		g2.drawString(text , x, y);
 	}

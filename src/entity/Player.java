@@ -18,7 +18,6 @@ import object.SuperObject;
 
 public class Player extends Entity{
 	
-	GamePanel gp;
 	KeyHandler keyH;
 	
 	public final int screenX;
@@ -31,8 +30,10 @@ public class Player extends Entity{
 	
 	public Player(GamePanel gp, KeyHandler keyH)
 	{
+		super(gp);//pass gp to constructor of parent
 		
-		this.gp = gp;
+		entityType = EntityType.PLAYER;
+		
 		this.keyH = keyH;
 		
 		screenX = (gp.screenWidth / 2)  - (gp.tileSize / 2); //we subctract half of a tile because these coordinates are indicates the top left corner of the image
@@ -67,32 +68,18 @@ public class Player extends Entity{
 	
 	public void getPlayerImage() //hit as low as 500k at draw() after pre scaling player
 	{
-		up1 = setup("boy_up_1");
-		up2 = setup("boy_up_2");
-		down1 = setup("boy_down_1");
-		down2 = setup("boy_down_2");
-		right1 = setup("boy_right_1");
-		right2 = setup("boy_right_2");
-		left1 = setup("boy_left_1");
-		left2 = setup("boy_left_2");
+		up1 = setup("/player/", "boy_up_1");
+		up2 = setup("/player/", "boy_up_2");
+		down1 = setup("/player/", "boy_down_1");
+		down2 = setup("/player/", "boy_down_2");
+		right1 = setup("/player/", "boy_right_1");
+		right2 = setup("/player/", "boy_right_2");
+		left1 = setup("/player/", "boy_left_1");
+		left2 = setup("/player/", "boy_left_2");
 			
 	}
 	
-	public BufferedImage setup(String imageName)
-	{
-		BufferedImage scaledImage = null;
-		try
-		{
-			scaledImage = ImageIO.read(getClass().getResourceAsStream("/player/" + imageName + ".png"));
-			scaledImage = UtilityTool.scaleImage(scaledImage, gp.tileSize, gp.tileSize);
-			
-		}catch(IOException e)
-		{
-			e.printStackTrace();
-		}
-		
-		return scaledImage;
-	}
+
 	
 	public void updateCameraOff()
 	{
@@ -138,6 +125,9 @@ public class Player extends Entity{
 			//object coll
 			int objIndex = gp.cChecker.checkObject(this, true);
 			pickUpObject(objIndex);
+			
+			int npcIndex = gp.cChecker.checkEntity(this, gp.npcs);
+			interactNPC(npcIndex);
 			
 			if (collisionOn == false)
 			{
@@ -346,6 +336,13 @@ public class Player extends Entity{
 		
 	}
 	
+	public void interactNPC(int i)
+	{
+		if (i != -1)
+		{
+			System.out.println("hitted an npc");
+		}
+	}
 	public void pickUpObject(int i) {
 	    if (i == -1) {
 	        return;

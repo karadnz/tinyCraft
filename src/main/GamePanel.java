@@ -14,13 +14,14 @@ import java.util.Scanner;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
-import entity.Player;
-import tile.TileManager;
+import entity.*;
+import tile.*;
 import object.*;
 
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class GamePanel extends JPanel implements Runnable{
 	
@@ -52,6 +53,7 @@ public class GamePanel extends JPanel implements Runnable{
 	//ENTITY AND OBJECT
 	public Player player = new Player(this, keyH);
 	public List<SuperObject> objects = new ArrayList<>();
+	public List<Entity> npcs = new ArrayList<>();
 	
 	public SuperObject obj[]= new SuperObject[10]; //REMOVE
 	
@@ -60,8 +62,8 @@ public class GamePanel extends JPanel implements Runnable{
 	public int[][] map;
 	private OpenSimplexNoise noise;
 	
-	public int maxWorldCol = 300; //50 50 //final int
-	public int maxWorldRow = 300;
+	public int maxWorldCol = 305; //50 50 //final int
+	public int maxWorldRow = 305;
 	
 	public final int maxWorldWidth = tileSize * maxWorldCol;
 	public final int maxWorldHeight = tileSize * maxWorldRow;
@@ -85,7 +87,7 @@ public class GamePanel extends JPanel implements Runnable{
 		  UNDEFINED
 		}
 	
-	public GameState gameState;
+	public GameState gameState = GameState.PLAY;
 	
 	
 	
@@ -108,8 +110,8 @@ public class GamePanel extends JPanel implements Runnable{
 		 //int mapHeight = (screenHeight / tileSize) * 20;
 		 this.map = new int[maxWorldCol][maxWorldRow];
 		 this.noise = new OpenSimplexNoise(rand.nextLong());
-		 generateMap();
-		 //loadMap();
+		 //generateMap();
+		 loadMap();
 		 
 		 startTime = System.nanoTime();
 		
@@ -124,12 +126,13 @@ public class GamePanel extends JPanel implements Runnable{
 	public void setupGame()
 	{
 		aSetter.setObject();
+		aSetter.setNpc();
 		
 		//playMusic(0);
-		gameState = GameState.PLAY;
+		gameState = GameState.PLAY; //throws exception when i remove the initilazation on the top
 	}
 	
-	public void loadMap()
+	public void loadMap() //add setupobj and setupnpc
 	{	
 		try
 		{
@@ -176,7 +179,7 @@ public class GamePanel extends JPanel implements Runnable{
 	}
 	
 	
-	public void tryGenerateObject(String obj, int num, int x, int y)
+	public void tryGenerateObject(String obj, int num, int x, int y) //change string to enum
 	{
 		if (rand.nextInt(num) != 0)
 			return ;
@@ -213,6 +216,27 @@ public class GamePanel extends JPanel implements Runnable{
 		
 	}
 	
+	public void tryGenerateNpc(Entity.EntityType entityType, int num, int x, int y)
+	{
+		if (rand.nextInt(num) != 0)
+			return ;
+		switch(entityType)
+		{
+			case NPC_OLDMAN :
+				NPC_Oldman entity = new NPC_Oldman(this); 
+				entity.worldX = x * tileSize;
+				entity.worldY = y * tileSize;
+                npcs.add(entity);
+				break;
+		default:
+			break;
+				
+			
+		}
+		
+	}
+	
+	//FIX X Y NAMING ISSUE
 	public void generateMap() {
 	    double scale = 0.1; // smaller values create smoother transitions
 	    for(int x = 0; x < map.length; x++)
@@ -228,22 +252,23 @@ public class GamePanel extends JPanel implements Runnable{
 	            {
 	                map[x][y] = 5;  // sand
 	                
-	                tryGenerateObject("Chest", 300, x, y);
+	                tryGenerateObject("Chest", 300, y, x);
+	                tryGenerateNpc(Entity.EntityType.NPC_OLDMAN, 100, y, x);
 	            
 	            }
 	            else if (value < 0.3)
 	            {
 	                map[x][y] = 0;  // grass
 	                
-	                tryGenerateObject("Key", 100, x, y);
-	                tryGenerateObject("Door", 300, x, y);
+	                tryGenerateObject("Key", 100, y, x);
+	                tryGenerateObject("Door", 300, y, x);
 
 	            }
 	            else if (value < 0.5)
 	            {
 	                map[x][y] = 3;  // earth
 	                
-	                tryGenerateObject("Boots", 150, x, y);
+	                tryGenerateObject("Boots", 150, y, x);
 	            }
 	            else if (value < 0.7)
 	            {
@@ -332,6 +357,10 @@ public class GamePanel extends JPanel implements Runnable{
 		case PLAY:
 			player.updateCameraOff();
 			//player.update(); //collison problem
+			for (Entity entity : npcs)
+			{
+				entity.update();
+			}
 			break;
 		case PAUSE:
 			
@@ -369,6 +398,12 @@ public class GamePanel extends JPanel implements Runnable{
 		for (SuperObject object : objects)
 	    {
 	        object.draw(g2, this);
+	    }
+		
+		//npc
+		for (Entity entity : npcs)
+	    {
+	        entity.draw(g2, this);
 	    }
 		
 		//PLAYER
