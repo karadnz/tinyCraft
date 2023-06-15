@@ -39,7 +39,7 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	//SYSTEM
 	TileManager tileM = new TileManager(this);
-	KeyHandler keyH = new KeyHandler(this);
+	public KeyHandler keyH = new KeyHandler(this);
 	Sound music = new Sound();
 	Sound se = new Sound();
 	
@@ -62,11 +62,13 @@ public class GamePanel extends JPanel implements Runnable{
 	public int[][] map;
 	private OpenSimplexNoise noise;
 	
+	
+	//these values are updated at loadmap() and used directly in generate map()
 	public int maxWorldCol = 305; //50 50 //final int
 	public int maxWorldRow = 305;
 	
-	public final int maxWorldWidth = tileSize * maxWorldCol;
-	public final int maxWorldHeight = tileSize * maxWorldRow;
+	public int maxWorldWidth = tileSize * maxWorldCol;
+	public int maxWorldHeight = tileSize * maxWorldRow; //final
 	
 	
 	//MISC
@@ -81,9 +83,10 @@ public class GamePanel extends JPanel implements Runnable{
 	public final int pauseStat = 2;
 	
 	
-	enum GameState {
+	public enum GameState {
 		  PLAY,
 		  PAUSE,
+		  DIALOGUE,
 		  UNDEFINED
 		}
 	
@@ -110,8 +113,8 @@ public class GamePanel extends JPanel implements Runnable{
 		 //int mapHeight = (screenHeight / tileSize) * 20;
 		 this.map = new int[maxWorldCol][maxWorldRow];
 		 this.noise = new OpenSimplexNoise(rand.nextLong());
-		 //generateMap();
-		 loadMap();
+		 generateMap();
+		 //loadMap();
 		 
 		 startTime = System.nanoTime();
 		
@@ -162,6 +165,9 @@ public class GamePanel extends JPanel implements Runnable{
 	        
 	        maxWorldRow = rows;
 	        maxWorldCol = cols;
+	        
+	        maxWorldWidth = tileSize * maxWorldCol;
+	        maxWorldHeight = tileSize * maxWorldRow;
 
 	        map = new int[rows][cols];
 	        

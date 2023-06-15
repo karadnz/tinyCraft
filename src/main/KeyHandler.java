@@ -7,7 +7,7 @@ import main.GamePanel.GameState;
 
 public class KeyHandler extends KeyAdapter {
 
-    public boolean upPressed, downPressed, leftPressed, rightPressed;
+    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed;
     GamePanel gp;
     
     //DEBUG
@@ -18,6 +18,35 @@ public class KeyHandler extends KeyAdapter {
     	this.gp = gp;
     }
     
+    public void handlePressPlay(int code)
+    {
+    	        
+        switch (code)
+        {
+        case KeyEvent.VK_W:
+        	upPressed = true;
+        	break;
+        case KeyEvent.VK_S:
+        	downPressed = true;
+        	break;
+        case KeyEvent.VK_A:
+        	leftPressed = true;
+        	break;
+        case KeyEvent.VK_D:
+        	rightPressed = true;
+        	break;
+        case KeyEvent.VK_T:
+        	isDebug = !isDebug;
+        	break;
+        case KeyEvent.VK_SPACE:
+        	gp.gameState = GameState.PAUSE;
+        	break;
+        case KeyEvent.VK_ENTER:
+        	enterPressed = true;
+        	break;
+        }
+    	
+    }
     
 
     @Override
@@ -26,39 +55,27 @@ public class KeyHandler extends KeyAdapter {
 
         int code = e.getKeyCode();
         
-
-        if (code == KeyEvent.VK_W) {
-            //System.out.println("HIT");
-            upPressed = true;
-        }
-
-        if (code == KeyEvent.VK_S) {
-            //System.out.println("HIT");
-            downPressed = true;
-        }
-
-        if (code == KeyEvent.VK_A) {
-            //System.out.println("HIT");
-            leftPressed = true;
-        }
-
-        if (code == KeyEvent.VK_D) {
-            //System.out.println("HIT");
-            rightPressed = true;
-        }
-        
-        if (code == KeyEvent.VK_T) {
-            //System.out.println("HIT");
-            isDebug = !isDebug;
+        switch(gp.gameState)
+        {
+		case DIALOGUE:
+			gp.gameState = GameState.PLAY;
+		 if (code == KeyEvent.VK_ENTER)
+        	enterPressed = !enterPressed;
+        	break;
+		case PAUSE:
+			gp.gameState = GameState.PLAY;
+			break;
+		case PLAY:
+			handlePressPlay(code);
+			break;
+		case UNDEFINED:
+			gp.gameState = GameState.PLAY;
+			break;
+		default:
+			break;
         }
         
-        if (code == KeyEvent.VK_SPACE) {
-            //System.out.println("HIT");
-            if (gp.gameState == GameState.PAUSE)
-            	gp.gameState = GameState.PLAY;
-            else
-            	gp.gameState = GameState.PAUSE;
-        }
+       
     }
 
     @Override
@@ -82,5 +99,7 @@ public class KeyHandler extends KeyAdapter {
         if (code == KeyEvent.VK_D) {
             rightPressed = false;
         }
+        
+  
     }
 }

@@ -16,6 +16,7 @@ public class NPC_Oldman extends Entity{
 		speed = 2;
 		
 		getOldmanImage();
+		setDialogue();
 		
 	}
 	
@@ -32,6 +33,42 @@ public class NPC_Oldman extends Entity{
 			
 	}
 	
+	public void setDialogue()
+	{
+		dialogues[0] = "Hello lad!";
+		dialogues[1] = "Hi there!";
+		dialogues[2] = "How are ya doin";
+		
+		dialogues[3] = "I used to be a great wizard \nNow im just and old man...";
+		dialogues[4] = "sup";
+		dialogues[5] = "sup";
+		
+		
+		dialogues[8] = "";
+		
+	}
+	
+	public void speak() //FIX ENTER AND COLLISION
+	{
+		dialogueIndex = rand.nextInt(4);
+		gp.ui.currentDialogue = dialogues[dialogueIndex]; //random greeting //rand.nextInt(3)
+		
+		switch(gp.player.direction)
+		{
+		case "up":
+			direction = "down";
+		case "down":
+			direction = "up";
+		case "right":
+			direction = "left";
+		case "left":
+			direction = "right";
+			
+		}
+		
+	}
+	
+	//changes direction randomly every 120 calls
 	public void setAction()
 	{
 		actionLockCounter++;

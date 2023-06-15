@@ -1,9 +1,13 @@
 package main;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 
 import object.*;
@@ -12,7 +16,7 @@ public class UI {
 	
 	GamePanel gp;
 	Graphics2D g2;
-	Font arial_20B, arial_40B;
+	Font arial_20B, arial_40B, arial_32P,maruMonica;
 	BufferedImage keyImage;
 	
 	public boolean messageOn = false;
@@ -21,15 +25,27 @@ public class UI {
 	
 	public boolean gameFinished = false;
 	
+	public String currentDialogue = "";
+	
 	DecimalFormat dFormat = new DecimalFormat("#0.00");
 	
 	public UI(GamePanel gp)
 	{
 		this.gp = gp;
 		arial_20B = new Font("Ariel", Font.BOLD, 20);
+		arial_32P = new Font("Ariel", Font.PLAIN, 32);
 		arial_40B = new Font("Ariel", Font.BOLD, 40);//to avoid creating an instance each time draw called
 		OBJ_Key key = new OBJ_Key(gp);
 		keyImage = key.image;
+		
+		
+		try {
+			InputStream is = getClass().getResourceAsStream("/font/pixelNice.ttf");
+			maruMonica = Font.createFont(Font.TRUETYPE_FONT, is);
+		} catch (FontFormatException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void showMessage(String text)
@@ -56,6 +72,40 @@ public class UI {
 		g2.drawString(text , x, y);
 	}
 	
+	public void drawDialogueScreen()
+	{
+		String text = "PAUSED";
+		
+		
+		int x = gp.tileSize * 2;
+		int y = gp.tileSize / 2;
+		
+		int width = gp.screenWidth - (gp.tileSize * 4);
+		int height = gp.tileSize * 5;
+		
+		drawSubWindow(x, y, width, height);
+		
+		x += gp.tileSize;
+		y += gp.tileSize;
+		setText(g2, arial_32P, new Color(255, 255, 255));
+		for (String line : currentDialogue.split("\n")) //top split lines
+		{
+			g2.drawString(line, x, y);
+			y += 40;
+		}
+		
+	}
+	
+	public void drawSubWindow(int x, int y, int width, int height)
+	{
+		setText(g2, arial_40B, new Color(0, 0, 0, 200));
+		g2.fillRoundRect(x, y, width, height, 35, 35);
+		
+		setText(g2, arial_40B, new Color(255, 255, 255)); //draw a white rect to make it outline
+		g2.setStroke(new BasicStroke(5));
+		g2.drawRoundRect(x + 5, y + 5, width - 10, height- 10, 25, 25);
+		
+	}
 	
 	
 	public void draw(Graphics2D g2)
@@ -69,6 +119,9 @@ public class UI {
 			break;
 		case PAUSE:
 			drawPauseScreen();
+			break;
+		case DIALOGUE:
+			drawDialogueScreen();
 			break;
 		case UNDEFINED:
 			break;

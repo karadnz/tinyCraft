@@ -10,6 +10,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import main.GamePanel;
+import main.GamePanel.GameState;
 import main.KeyHandler;
 import main.UtilityTool;
 import object.SuperObject;
@@ -96,7 +97,7 @@ public class Player extends Entity{
 				spriteCounter = 0;
 			}
 			
-			int threshold = gp.tileSize * 3; // define a boundary threshold
+			
 			
 			if(keyH.upPressed == true)
 			{
@@ -129,32 +130,33 @@ public class Player extends Entity{
 			int npcIndex = gp.cChecker.checkEntity(this, gp.npcs);
 			interactNPC(npcIndex);
 			
+			int threshold = gp.tileSize * 1; // define a boundary threshold
+			
 			if (collisionOn == false)
 			{
 				switch (direction)
-				{
-				case "up":
-					
-						worldY -= speed;
-					
-					break;
-				case "down":
-					
-						worldY += speed;
-				
-					break;
-				case "left":
-					
-						worldX -= speed;
-					
-					break;
-				case "right":
-					
-						worldX += speed;
-					
-					break;
-				
-				}
+		        {
+		            case "up":
+		                if (worldY - speed >= threshold) {
+		                    worldY -= speed;
+		                }
+		                break;
+		            case "down":
+		                if (worldY + speed <= gp.maxWorldHeight - threshold) {
+		                    worldY += speed;
+		                }
+		                break;
+		            case "left":
+		                if (worldX - speed >= threshold) {
+		                    worldX -= speed;
+		                }
+		                break;
+		            case "right":
+		                if (worldX + speed <= gp.maxWorldWidth - threshold) {
+		                    worldX += speed;
+		                }
+		                break;
+		        }
 				
 			}
 		}
@@ -338,10 +340,15 @@ public class Player extends Entity{
 	
 	public void interactNPC(int i)
 	{
-		if (i != -1)
+		if (i == -1)
+			return ;
+		if (gp.keyH.enterPressed)
 		{
-			System.out.println("hitted an npc");
+			gp.gameState = GameState.DIALOGUE;
+			System.out.println("NPC : " + i);
+			gp.npcs.get(i).speak();
 		}
+		gp.keyH.enterPressed = false;
 	}
 	public void pickUpObject(int i) {
 	    if (i == -1) {

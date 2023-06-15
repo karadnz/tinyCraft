@@ -26,6 +26,9 @@ public class Entity {
 	
 	Random rand = new Random();
 	
+	String dialogues[] = new String[20];
+	int dialogueIndex = 0;
+	
 	
 	public int worldX, worldY;
 	public int speed;
@@ -51,48 +54,54 @@ public class Entity {
 	}
 	
 	public void setAction() {}
+	public void speak() {}
 	public void update()
 	{
-		
-		spriteCounter++;
-		if (spriteCounter > 10)
-		{
-			if (spriteNum == 1)
-				spriteNum = 2;
-			else
-				spriteNum =1;
-			spriteCounter = 0;
-		}
-		
-		
-		setAction();
-		
-		collisionOn = false;
-		gp.cChecker.checkTile(this);
-		gp.cChecker.checkObject(this, collisionOn); //you can interact with object using return value
-		gp.cChecker.checkPlayer(this);
-		
-		
-		
-		
-		if (collisionOn == false)
-		{
-			switch (direction)
-			{
-			case "up":
-					worldY -= speed;
-				break;
-			case "down":
-					worldY += speed;
-				break;
-			case "left":
-					worldX -= speed;
-				break;
-			case "right":
-					worldX += speed;
-				break;
-			}
-		}
+	    spriteCounter++;
+	    if (spriteCounter > 10)
+	    {
+	        if (spriteNum == 1)
+	            spriteNum = 2;
+	        else
+	            spriteNum =1;
+	        spriteCounter = 0;
+	    }
+	    
+	    setAction();
+	    
+	    collisionOn = false;
+	    gp.cChecker.checkTile(this);
+	    gp.cChecker.checkObject(this, collisionOn); //you can interact with object using return value
+	    gp.cChecker.checkPlayer(this);
+	    
+	    int threshold = gp.tileSize * 2;
+	    
+	    if (collisionOn == false)
+	    {
+	        switch (direction)
+	        {
+	            case "up":
+	                if (worldY - speed >= threshold) {
+	                    worldY -= speed;
+	                }
+	                break;
+	            case "down":
+	                if (worldY + speed <= gp.maxWorldHeight - threshold) {
+	                    worldY += speed;
+	                }
+	                break;
+	            case "left":
+	                if (worldX - speed >= threshold) {
+	                    worldX -= speed;
+	                }
+	                break;
+	            case "right":
+	                if (worldX + speed <= gp.maxWorldWidth - threshold) {
+	                    worldX += speed;
+	                }
+	                break;
+	        }
+	    }
 	}
 	
 	
